@@ -85,8 +85,9 @@ function askPromptQuestions() {
     }
   })
 }
-// Questions specific to the intern 
-const internQuestionsArr = [
+function promptInternQuestionsArr(){
+  // Questions specific to the intern 
+  const internQuestionsArr = [
     {
       type: "input",
       message: "What is your intern's first name?",
@@ -123,10 +124,13 @@ const internQuestionsArr = [
         employees.push(intern);
         return askPromptQuestions();
       });
+ }
+
+
     
 
-
-const engineerQuestionsArr = [
+function promptEngineerQuestionsArr() {
+  const engineerQuestionsArr = [
     {
       type: "input",
       message: "What is your engineer's first name?",
@@ -153,14 +157,18 @@ const engineerQuestionsArr = [
         name: "github",
       },
 ];
-inquirer.prompt(engineerQuestionsArr).then(answers) => {
+inquirer.prompt(engineerQuestionsArr).then((answers) => {
   const engineer = new Engineer(
     answers.firstName + " " + answers.lastName,
           answers.id,
           answers.email,
           answers.github
   );
+  employees.push(engineer);
+  return askPromptQuestions();
+});
 }
+
 
 // function to write HTMl file and exit the questions 
 function exit() {
@@ -168,7 +176,7 @@ function exit() {
 }
 
 
-
+init(); 
 
 
 

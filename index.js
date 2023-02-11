@@ -6,13 +6,20 @@ const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const generateHtml = require("./utils/generatehtml"); 
 
+// Empty array to begin with 
+const employees = [];
 
+function writeToFile(fileName, data) {
+  
 
+  fs.writeFile(fileName, generateHtml(employees), (err) =>
+    err ? console.error(err) : console.log("index.html successfully created!")
+  );
+}
 
-// function to write HTMl file
-
-// array of questions for manager
+// array of questions for all employees
 
 const managerQuestionsArr = [
     {
@@ -41,9 +48,44 @@ const managerQuestionsArr = [
         name: "officeNumber",
       },
 ]
+// Created a function that will initiate the prompt for the manager questions.
+function init() {
+  inquirer.prompt(managerQuestionsArr).then((answers) => {
+    const manager = new Manager(
+      answers.firstName + " " + answers.lastName,
+      answers.id,
+      answers.email,
+      answers.officeNumber
+    );
+    employees.push(manager);
+    return askPromptQuestions();
+  });
+}
 
-
-
+// Questions to add a new kind of employee 
+const startQuestions= [
+  {
+      type: "list",
+      message: "What kind of employee do you want to add to your team?",
+      choices: ["Engineer", "Intern", "Exit"],
+      name: "employeeSelection",
+  }
+];
+function askPromptQuestions() {
+  inquirer.prompt(startQuestions)
+  .then((answers) => {
+    if (answers.employeeSelection === "Intern") {
+      promptInternQuestionsArr();
+    }
+    if (answers.employeeSelection === "Engineer") {
+      promptEngineerQuestionsArr();
+    }
+    if (answers.employeeSelection === "Exit") {
+      exit();
+    }
+  })
+}
+// Questions specific to the intern 
 const internQuestionsArr = [
     {
       type: "input",
@@ -70,8 +112,18 @@ const internQuestionsArr = [
         message: "What is your intern's school name?",
         name: "school",
       },
-]
-
+];
+      inquirer.prompt(internQuestionsArr).then((answers) =>  {
+        const intern = new Intern(
+          answers.firstName + " " + answers.lastName,
+          answers.id,
+          answers.email,
+          answers.school
+        );
+        employees.push(intern);
+        return askPromptQuestions();
+      });
+    
 
 
 const engineerQuestionsArr = [
@@ -100,9 +152,24 @@ const engineerQuestionsArr = [
         message: "What is your engineer's github username?",
         name: "github",
       },
-]
+];
+inquirer.prompt(engineerQuestionsArr).then(answers) => {
+  const engineer = new Engineer(
+    answers.firstName + " " + answers.lastName,
+          answers.id,
+          answers.email,
+          answers.github
+  );
+}
 
-// need an empty array to push these answers into 
+// function to write HTMl file and exit the questions 
+function exit() {
+  writeToFile("index.html", employees);
+}
 
-// manager questions need to come first
-// need to include github for engineer, school for intern, office number for manager
+
+
+
+
+
+
